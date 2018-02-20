@@ -17,7 +17,7 @@ typedef struct Tex {
 
 
 
-const char *background_path,*head_path,*tail_path,*body_path,*food_path,*obstacle_path;
+const char *background_path, *head_path, *tail_path, *body_path, *food_path, *obstacle_path;
 SDL_Rect *head_right;
 SDL_Rect *head_up;
 SDL_Rect *head_left;
@@ -44,9 +44,10 @@ SDL_Texture *snake_body;
 SDL_Texture *food_texture;
 SDL_Texture *obstacle;
 SDL_Texture *background;
-Texture *snake,*last;
+Texture *snake, *last;
 SDL_Point *obstacles;
-int height,width,speed,obstacle_length;
+
+int height, width, speed, obstacle_length, texture_width, texture_height, tiles_x, tiles_y;
 
 
 void init_game();

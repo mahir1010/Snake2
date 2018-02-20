@@ -3,7 +3,7 @@
 
 void init_game() {
 
-		srand(time(NULL));
+	srand(time(NULL));
 
 	head_right = (SDL_Rect*)malloc(sizeof(SDL_Rect));
 	head_up = (SDL_Rect*)malloc(sizeof(SDL_Rect));

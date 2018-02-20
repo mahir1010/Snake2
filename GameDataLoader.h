@@ -6,7 +6,7 @@
 
 int load_level_data();
 int load_sprite_data();
-void set_sdl_rect(SDL_Rect**,config_setting_t *);
+void set_sdl_rect(SDL_Rect**, config_setting_t *);
 SDL_Rect *get_clipping_window(const char *);
 SDL_Texture **get_game_texture(char);
 SDL_Keycode get_direction(char);

@@ -1,7 +1,7 @@
 #include "GameUtil.h"
 
-Texture *insert_new_texture(Texture *head, int x, int y, SDL_Rect  *clipped_texture, SDL_Texture **target_texture, int x_incr, int y_incr,SDL_Keycode direction){
-		Texture *n = (Texture*)malloc(sizeof(Texture));
+Texture *insert_new_texture(Texture *head, int x, int y, SDL_Rect  *clipped_texture, SDL_Texture **target_texture, int x_incr, int y_incr, SDL_Keycode direction) {
+	Texture *n = (Texture*)malloc(sizeof(Texture));
 	if (n == NULL) {
 		printf("ERROR IN ALLOCATION");
 		return NULL;
@@ -25,7 +25,7 @@ Texture *insert_new_texture(Texture *head, int x, int y, SDL_Rect  *clipped_text
 
 
 /**
- * Checks whether the head has collided with the body 
+ * Checks whether the head has collided with the body
  * @param  head Pointer to head of the snake
  * @return      1 if collision occured,0 if collision didn't occur.
  */
@@ -66,45 +66,44 @@ void increase_length(Texture **head, SDL_Texture **target, SDL_Texture **snake_h
  * @param food_texture texture required to draw the food.
  * @param food          Structure contating the coordinates of food.
  */
-void generate_food(SDL_Renderer *renderer,SDL_Rect *food_instance) {
-	int i,collision=1;
-  while (food_instance->x == -1 && collision) {
-		food_instance->x = 64 * (rand() % (width / 64));
-		food_instance->y = 64 * (rand() % (height / 64));
-    for(i=0;i<obstacle_length;i++){
-      if(check_collision(food_instance->x,food_instance->y,obstacles[i].x,obstacles[i].y)==1){
-        collision=1;
-        break;
-      }
-      collision=0;
-    }
+void generate_food(SDL_Renderer *renderer, SDL_Rect *food_instance) {
+	int i, collision = 1;
+	while (food_instance->x == -1 && collision) {
+		food_instance->x = texture_width * (rand() % (width / texture_width));
+		food_instance->y = texture_height * (rand() % (height / texture_height));
+		for (i = 0; i < obstacle_length; i++) {
+			if (check_collision(food_instance->x, food_instance->y, obstacles[i].x, obstacles[i].y) == 1) {
+				collision = 1;
+				break;
+			}
+			collision = 0;
+		}
 	}
-  food_instance->x=1;
 	SDL_RenderCopy(renderer, food_texture, food, food_instance);
 }
 /**
  * General boundry collision detection algorithm
- * @param  x  x coordinate of object1 
+ * @param  x  x coordinate of object1
  * @param  y  y coordinate of object1
- * @param  x1 x coordinate of object2 	
+ * @param  x1 x coordinate of object2
  * @param  y1 y coordinate of object2
  * @return    1 if collision occurs,0 if collision doesn't occur.
  */
 int check_collision(int x, int y, int x1, int y1) {
 
-	if ((x < x1 + 64 && x + 64 > x1) && (y < y1 + 64 && 64 + y > y1)) {
+	if ((x < x1 + texture_width && x + texture_width > x1) && (y < y1 + texture_height && texture_height + y > y1)) {
 		return 1;
 	}
 	return 0;
 }
 
-void generate_obs(SDL_Renderer *renderer){
-	SDL_Rect viewing_window={0,0,64,64};
+void generate_obs(SDL_Renderer *renderer) {
+	SDL_Rect viewing_window = {0, 0, texture_width, texture_height};
 	int i;
-	for(i=0;i<obstacle_length;i++){
-		viewing_window.x=obstacles[i].x;
-		viewing_window.y=obstacles[i].y;
-		SDL_RenderCopy(renderer,obstacle,obs,&viewing_window);
+	for (i = 0; i < obstacle_length; i++) {
+		viewing_window.x = obstacles[i].x;
+		viewing_window.y = obstacles[i].y;
+		SDL_RenderCopy(renderer, obstacle, obs, &viewing_window);
 	}
 }
 
@@ -116,45 +115,45 @@ void change_direction(int x_incr, int y_incr, SDL_Rect *clipped_texture, SDL_Key
 }
 void update_texture() {
 	Texture *temp = last->prev;
-	if (last->prev->x_incr == 0 && last->prev->y_incr == 0) {
-		switch (last->prev->direction) {
+	if ( temp->x_incr == 0 && temp->y_incr == 0) {
+		switch (temp->direction) {
 		case SDLK_DOWN:
 			last->clipped_texture = tail_down;
 			last->x_incr = 0;
-			last->y_incr = 64;
+			last->y_incr = texture_height;
 			last->direction = SDLK_DOWN;
-			last->x = last->prev->x;
-			last->y = last->prev->y;
+			last->x = temp->x;
+			last->y = temp->y;
 			break;
 		case SDLK_RIGHT:
 			last->clipped_texture = tail_right;
-			last->x_incr = 64;
+			last->x_incr = texture_width;
 			last->y_incr = 0;
 			last->direction = SDLK_RIGHT;
-			last->x = last->prev->x;
-			last->y = last->prev->y;
+			last->x = temp->x;
+			last->y = temp->y;
 			break;
 		case SDLK_UP:
 			last->clipped_texture = tail_up;
 			last->x_incr = 0;
-			last->y_incr = -1*64;
+			last->y_incr = -1 * texture_height;
 			last->direction = SDLK_UP;
-			last->x = last->prev->x;
-			last->y = last->prev->y;
+			last->x = temp->x;
+			last->y = temp->y;
 			break;
 		case SDLK_LEFT:
 			last->clipped_texture = tail_left;
-			last->x_incr = -1*64;
+			last->x_incr = -1 * texture_width;
 			last->y_incr = 0;
 			last->direction = SDLK_LEFT;
-			last->x = last->prev->x;
-			last->y = last->prev->y;
+			last->x = temp->x;
+			last->y = temp->y;
 			break;
 		}
 	} else {
 		last->x += last->x_incr;
 		last->y += last->y_incr;
-    if (last->x > width) {
+		if (last->x > width) {
 			last->x = 0;
 		}
 		else if (last->x < 0) {
@@ -245,25 +244,28 @@ void update_texture() {
 	temp = temp->prev;
 	temp->x += temp->x_incr;
 	temp->y += temp->y_incr;
-	if (temp->x > width) {
+
+	if (temp->x >= width ) {
 		temp->x = 0;
 	}
 	else if (temp->x < 0) {
-		temp->x = width;
+		temp->x = width - texture_width;
 	}
-	if (temp->y > height) {
+	if (temp->y >= height) {
 		temp->y = 0;
+
 	}
 	else if (temp->y < 0) {
-		temp->y = height;
+		temp->y = height - texture_height;
 	}
+
 }
 
 void render_snake(SDL_Renderer *renderer) {
 	Texture *temp = snake;
 	SDL_Rect viewing_window;
-	viewing_window.w = 64;
-	viewing_window.h = 64;
+	viewing_window.w = texture_width;
+	viewing_window.h = texture_height;
 	while (temp != NULL) {
 		viewing_window.x = temp->x;
 		viewing_window.y = temp->y;
