@@ -1,5 +1,5 @@
 #include "GameDataLoader.h"
-
+#include <unistd.h>
 
 int main() {
   SDL_Window *window;
@@ -7,8 +7,7 @@ int main() {
   SDL_Event event;
   SDL_Keycode lastKey;
   SDL_DisplayMode mode;
-  float start, end;
-  int condition = 1, delay = 1000 / 11, i, collided = 0;
+  int delay = 1000000 / 15 , i, collided = 0;
   SDL_Rect food_instance = { -1, -1, 64, 64};
   init_game();
   load_level_data();
@@ -26,14 +25,13 @@ int main() {
     return -1;
   }
   while (!collided) {
-    start = SDL_GetTicks();
-    clear_background(renderer);
+    float start = SDL_GetTicks();
     if (SDL_PollEvent(&event) > 0) {
       switch (event.type) {
       case SDL_KEYDOWN:
         switch (event.key.keysym.sym) {
         case SDLK_ESCAPE:
-          condition = 0;
+          collided = 1;
           break;
         case SDLK_LEFT:
           if (lastKey == SDLK_RIGHT || lastKey == SDLK_LEFT) {
@@ -64,11 +62,11 @@ int main() {
         lastKey = event.key.keysym.sym;
       }
     }
+    clear_background(renderer);
     generate_food(renderer, &food_instance);
     generate_obs(renderer);
     update_texture(last);
     render_snake(renderer);
-    SDL_RenderPresent(renderer);
     if (check_snake_collision(snake) == 1) {
       collided = 1;
     }
@@ -83,9 +81,12 @@ int main() {
       increase_length(&snake, &snake_body, &snake_head);
       food_instance.x = -1;
     }
-    end = SDL_GetTicks();
-    if (end - start < delay)
-      SDL_Delay(delay - end + start);
+    SDL_RenderPresent(renderer);
+
+    float end = SDL_GetTicks();
+    if (end - start < delay / 1000) {
+      usleep(delay - end + start);
+    }
   }
   SDL_DestroyTexture( snake_head);
   SDL_DestroyTexture( snake_tail);
